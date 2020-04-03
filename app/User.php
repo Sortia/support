@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -47,8 +46,8 @@ class User extends Authenticatable
         return $this->isManager() ? 'manager' : 'client';
     }
 
-    public static function getManagers()
+    public static function getManager()
     {
-        return self::on()->where('is_manager', 1)->pluck('email');
+        return self::on()->where('is_manager', 1)->first();
     }
 }

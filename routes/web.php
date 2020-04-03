@@ -31,3 +31,5 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/file/{message}', 'FileController@get')->name('file.get');
 });
 
+Route::get('/claim/{claim:shortcode}/auth', 'ClaimController@auth')->name('claim.auth');
+

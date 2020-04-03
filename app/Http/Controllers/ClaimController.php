@@ -8,6 +8,7 @@ use App\Http\Requests\ClaimRequest;
 use App\Http\Requests\MessageRequest;
 use App\Repositories\ClaimRepository;
 use App\Services\ClaimService;
+use App\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -105,11 +106,25 @@ class ClaimController extends Controller
         return $claim->update(['is_active' => false]);
     }
 
+    /**
+     * Автоаутентификация пользователя по ссылке
+     */
+    public function auth(Claim $claim): RedirectResponse
+    {
+        auth()->login(User::getManager(), true);
+
+        return redirect(route('claim.edit', compact('claim')));
+    }
+
+    /**
+     * Обработка создания сообщения
+     */
     private function processAddMessage(Claim $claim, Request $request): void
     {
         $message = $this->repository->createMessage($claim, $request);
 
         $this->service->handleUploadedFile($request->file, $message);
+        $this->service->generateAuthShortcode($claim);
         $this->service->sendMailOnNewMessage($claim, $message);
     }
 }

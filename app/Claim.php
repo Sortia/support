@@ -13,6 +13,7 @@ class Claim extends Model
         'is_answered',
         'user_id',
         'manager_id',
+        'shortcode'
     ];
 
     public function user()
@@ -29,4 +30,5 @@ class Claim extends Model
     {
         return $this->belongsTo(User::class, 'manager_id');
     }
+
 }

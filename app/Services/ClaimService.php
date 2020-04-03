@@ -10,6 +10,7 @@ use App\Repositories\ClaimRepository;
 use App\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class ClaimService
 {
@@ -39,29 +40,29 @@ class ClaimService
     public function sendMailOnNewMessage(Claim $claim, Message $message): void
     {
         if (auth()->user()->isManager()) {
-            $emails = $claim->user->email;
+            $addressee = $claim->user;
         } else {
-            if (is_null($claim->manager_id)) {
-                $emails = User::getManagers();
-            } else {
-                $emails = $claim->manager->email ?? null;
-            }
+            $addressee = User::getManager();
         }
 
-        if (!is_null($emails)) {
-            Mail::to($emails)->send(new NewClaim($claim, $message));
-        }
+        Mail::to($addressee->email)->send(new NewClaim($claim, $message, $addressee));
     }
 
     /**
      * Отправка почты при закрытии заявки
      */
-    public function sendMailOnCloseClaim(Claim $claim)
+    public function sendMailOnCloseClaim(Claim $claim): void
     {
-        $email = $claim->manager->email ?? null;
+        $addressee = User::getManager();
 
-        if (!is_null($email)) {
-            Mail::to($email)->send(new CloseClaim($claim));
-        }
+        Mail::to($addressee->email)->send(new CloseClaim($claim));
+    }
+
+    /**
+     * Геренация кода, по которому можно перейти к завке по ссылки с автоматической аутентификацией
+     */
+    public function generateAuthShortcode(Claim $claim): void
+    {
+        $claim->update(['shortcode' => Str::random(6)]);
     }
 }
