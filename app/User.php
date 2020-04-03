@@ -36,4 +36,19 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function isManager()
+    {
+        return (bool)$this->is_manager;
+    }
+
+    public function getRole()
+    {
+        return $this->isManager() ? 'manager' : 'client';
+    }
+
+    public static function getManagers()
+    {
+        return self::on()->where('is_manager', 1)->pluck('email');
+    }
 }

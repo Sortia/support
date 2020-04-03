@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,4 +20,14 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/home', 'HomeController@index')->name('home');
+
+    Route::resource('claim', 'ClaimController');
+
+    Route::post('/claim/{claim}/accept', 'ClaimController@accept')->name('claim.accept')->middleware('manager');
+    Route::post('/claim/{claim}/close', 'ClaimController@close')->name('claim.close')->middleware('client');
+
+    Route::get('/file/{message}', 'FileController@get')->name('file.get');
+});
+
