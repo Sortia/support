@@ -13,7 +13,6 @@ use App\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Telegram\Bot\Laravel\Facades\Telegram;
 
 class ClaimController extends Controller
 {
@@ -86,7 +85,7 @@ class ClaimController extends Controller
     {
         $this->processAddMessage($claim, $request);
 
-        $this->repository->updateClaim($claim);
+        $this->repository->updateClaimState($claim);
 
         return redirect(route('claim.edit', ['claim' => $claim->id]));
     }

@@ -45,15 +45,15 @@ class ClaimRepository
     {
         $claims = $this->model::on();
 
-        if (!is_null($request->is_active)) {
-           $claims->where('is_active', $request->is_active);
+        if ( ! is_null($request->is_active)) {
+            $claims->where('is_active', $request->is_active);
         }
 
-        if (!is_null($request->is_viewed)) {
+        if ( ! is_null($request->is_viewed)) {
             $claims->where('is_viewed', $request->is_viewed);
         }
 
-        if (!is_null($request->is_answered)) {
+        if ( ! is_null($request->is_answered)) {
             $claims->where('is_answered', $request->is_answered);
         }
 
@@ -85,7 +85,7 @@ class ClaimRepository
     /**
      * Изменение статуса заявки
      */
-    public function updateClaim(Claim $claim): void
+    public function updateClaimState(Claim $claim): void
     {
         if (auth()->user()->isManager()) {
             $claim->update(['is_answered' => true]);

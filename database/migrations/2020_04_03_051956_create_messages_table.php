@@ -18,7 +18,6 @@ class CreateMessagesTable extends Migration
             $table->text('text');
             $table->string('file')->nullable();
             $table->bigInteger('claim_id');
-            $table->bigInteger('user_id');
             $table->timestamps();
         });
     }
