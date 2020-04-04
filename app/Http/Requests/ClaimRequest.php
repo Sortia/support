@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ClaimInterval;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ClaimRequest extends FormRequest
@@ -24,7 +25,11 @@ class ClaimRequest extends FormRequest
     public function rules()
     {
         return [
-            'subject' => 'required|max:255',
+            'subject' => [
+                'required',
+                'max:255',
+                new ClaimInterval()
+            ],
             'text'    => 'required|max:50000',
         ];
     }
