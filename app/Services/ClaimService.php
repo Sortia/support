@@ -11,6 +11,7 @@ use App\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 class ClaimService
 {
@@ -64,5 +65,17 @@ class ClaimService
     public function generateAuthShortcode(Claim $claim): void
     {
         $claim->update(['shortcode' => Str::random(6)]);
+    }
+
+    public function sendTelegramMessageOnNewClaim(Claim $claim, Message $message)
+    {
+        $text = "<strong>{$claim->subject}</strong>\n";
+        $text .= $message->text;
+
+        Telegram::sendMessage([
+            'chat_id'    => env('TELEGRAM_MANAGER_ID'),
+            'text'       => $text,
+            'parse_mode' => 'html',
+        ]);
     }
 }

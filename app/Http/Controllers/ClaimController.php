@@ -6,12 +6,14 @@ use App\Claim;
 use App\Http\Requests\ClaimEdit;
 use App\Http\Requests\ClaimRequest;
 use App\Http\Requests\MessageRequest;
+use App\Message;
 use App\Repositories\ClaimRepository;
 use App\Services\ClaimService;
 use App\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 class ClaimController extends Controller
 {
@@ -69,9 +71,10 @@ class ClaimController extends Controller
      */
     public function store(ClaimRequest $request): RedirectResponse
     {
-        $claim = $this->repository->createClaim($request);
+        $claim   = $this->repository->createClaim($request);
+        $message = $this->processAddMessage($claim, $request);
 
-        $this->processAddMessage($claim, $request);
+        $this->service->sendTelegramMessageOnNewClaim($claim, $message);
 
         return redirect(route('claim.edit', ['claim' => $claim->id]));
     }
@@ -119,12 +122,14 @@ class ClaimController extends Controller
     /**
      * Обработка создания сообщения
      */
-    private function processAddMessage(Claim $claim, Request $request): void
+    private function processAddMessage(Claim $claim, Request $request): Message
     {
         $message = $this->repository->createMessage($claim, $request);
 
         $this->service->handleUploadedFile($request->file, $message);
         $this->service->generateAuthShortcode($claim);
         $this->service->sendMailOnNewMessage($claim, $message);
+
+        return $message;
     }
 }
